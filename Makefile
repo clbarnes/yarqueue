@@ -89,7 +89,7 @@ dist: clean ## builds source and wheel package
 	ls -l dist
 
 install: clean ## install the package to the active Python's site-packages
-	pip install .
+	pip install .[full]
 
 install-dev: clean
 	pip install -r requirements.txt && pip install -e .

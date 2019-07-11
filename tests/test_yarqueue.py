@@ -6,7 +6,7 @@
 import pytest
 
 
-from yarqueue import yarqueue
+from yarqueue import queue
 
 
 @pytest.fixture
