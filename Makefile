@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: clean clean-test clean-pyc clean-build docs help fmt install-dev
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -50,11 +50,15 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
+fmt:
+	black yarqueue tests setup.py
+
 lint: ## check style with flake8
 	flake8 yarqueue tests
+	black --check yarqueue tests setup.py
 
 test: ## run tests quickly with the default Python
-	py.test
+	pytest
 
 test-all: ## run tests on every Python version with tox
 	tox
@@ -85,4 +89,7 @@ dist: clean ## builds source and wheel package
 	ls -l dist
 
 install: clean ## install the package to the active Python's site-packages
-	python setup.py install
+	pip install .
+
+install-dev: clean
+	pip install -r requirements.txt && pip install -e .
