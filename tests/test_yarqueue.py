@@ -5,7 +5,7 @@
 import time
 from concurrent.futures.thread import ThreadPoolExecutor
 from queue import Full, Empty
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
 

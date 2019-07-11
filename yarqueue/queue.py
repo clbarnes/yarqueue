@@ -70,7 +70,7 @@ class Queue(BaseQueue):
         while len(self) >= maxsize:
             time.sleep(POLL_INTERVAL)
             if timeout is not None:
-                elapsed: timedelta = datetime.utcnow() - started
+                elapsed = datetime.utcnow() - started
                 if elapsed.total_seconds() >= timeout:
                     raise Full()
 
@@ -82,7 +82,7 @@ class Queue(BaseQueue):
     def _get(self, side: Side, block=True, timeout=None) -> object:
         if block:
             timeout = timeout or 0
-            msg = getattr(self._redis, f"b{side}pop")(self.name, timeout=timeout)
+            msg = getattr(self._redis, "b{}pop".format(side))(self.name, timeout=timeout)
             if msg is not None:
                 msg = msg[1]
         else:
@@ -127,7 +127,7 @@ class Queue(BaseQueue):
         while len(objs) > maxsize - len(self):
             time.sleep(POLL_INTERVAL)
             if timeout is not None:
-                elapsed: timedelta = datetime.utcnow() - started
+                elapsed = datetime.utcnow() - started
                 if elapsed.total_seconds() >= timeout:
                     raise Full()
 
