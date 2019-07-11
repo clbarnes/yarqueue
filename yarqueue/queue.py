@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Optional, Iterator, Iterable
 from queue import Empty, Full
-from datetime import datetime, timedelta
+from datetime import datetime
 import time
 
 from redis import Redis
