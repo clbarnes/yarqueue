@@ -88,8 +88,9 @@ dist: clean ## builds source and wheel package
 	python setup.py bdist_wheel
 	ls -l dist
 
-install: clean ## install the package to the active Python's site-packages
+install: clean-build clean-pyc ## install the package to the active Python's site-packages
 	pip install .[full]
 
-install-dev: clean
+install-dev: clean-build clean-pyc
+
 	pip install -r requirements.txt && pip install -e .
