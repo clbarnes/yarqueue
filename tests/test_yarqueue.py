@@ -54,7 +54,7 @@ def test_take(queue):
     for item in items:
         queue.put(item)
 
-    out = set(queue.take(len(items)))
+    out = set(queue.get_many(len(items)))
     assert out == items
 
 
@@ -74,7 +74,7 @@ def test_full(queue):
 def test_many(queue):
     vals = {1, 2, 3}
     queue.put_many(vals)
-    assert set(queue.take(3)) == vals
+    assert set(queue.get_many(3)) == vals
 
 
 def test_fifo_order(fifo):
@@ -82,7 +82,7 @@ def test_fifo_order(fifo):
     fifo.put(2)
     fifo.put(3)
 
-    assert list(fifo.take(3)) == [1, 2, 3]
+    assert list(fifo.get_many(3)) == [1, 2, 3]
 
 
 def test_lifo_order(lifo):
@@ -90,7 +90,7 @@ def test_lifo_order(lifo):
     lifo.put(2)
     lifo.put(3)
 
-    assert list(lifo.take(3)) == [3, 2, 1]
+    assert list(lifo.get_many(3)) == [3, 2, 1]
 
 
 def test_de(de):

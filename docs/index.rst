@@ -9,8 +9,6 @@ Welcome to Yet Another Redis Queue's documentation!
    installation
    usage
    modules
-   contributing
-   history
 
 Indices and tables
 ==================

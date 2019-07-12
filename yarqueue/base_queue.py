@@ -80,9 +80,11 @@ class BaseQueue(ABC):
 class BaseJoinableQueue(BaseQueue):
     @abstractmethod
     def n_tasks(self) -> int:
+        """How many items have been put onto the list without a respective ``task_done()`` call"""
         pass
 
     def n_in_progress(self) -> int:
+        """How many items have been popped from the queue without ``task_done()`` being called for them"""
         return self.n_tasks() - len(self)
 
     @abstractmethod
