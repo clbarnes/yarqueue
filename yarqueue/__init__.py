@@ -17,7 +17,7 @@ from .serializer import Pickle, Json
 
 __author__ = """Chris L. Barnes"""
 __email__ = "barnesc@janelia.hhmi.org"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 __all__ = [
     "Queue",
