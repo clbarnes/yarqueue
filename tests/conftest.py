@@ -23,7 +23,7 @@ def qname(class_name, test_name):
 
 @contextmanager
 def setup_teardown_cls(cls, name_prefix):
-    q = cls(qname(cls.__name__, name_prefix))
+    q = cls(0, qname(cls.__name__, name_prefix))
     yield q
     q.clear()
 

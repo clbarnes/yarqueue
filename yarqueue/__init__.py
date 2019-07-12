@@ -12,6 +12,7 @@ from .queue import (
     JoinableLifoQueue,
     JoinableDeQueue,
 )
+from .base_queue import QueueTimeoutError
 
 from .serializer import Pickle, Json
 
@@ -28,6 +29,7 @@ __all__ = [
     "JoinableFifoQueue",
     "JoinableLifoQueue",
     "JoinableDeQueue",
+    "QueueTimeoutError",
     "Pickle",
     "Json",
 ]

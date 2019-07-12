@@ -130,7 +130,7 @@ def test_wait(joinable):
 
 def test_join(request):
     name = qname(JoinableQueue.__name__, request.node.name)
-    q = JoinableQueue(name)
+    q = JoinableQueue(0, name)
     q.put(1)
 
     def fn():

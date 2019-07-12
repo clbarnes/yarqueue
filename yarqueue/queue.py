@@ -40,15 +40,15 @@ class Queue(BaseQueue):
 
     def __init__(
         self,
-        name: Optional[str],
         maxsize=0,
+        name: Optional[str] = None,
         redis: Optional[Redis] = None,
         serializer: Optional[BaseSerializer] = DEFAULT_SERIALIZER,
     ):
         """
-        :param name: name to use for the underlying redis list. Not mangled. If empty,
-            will generate a UUID4 identifier.
         :param maxsize: optional maximum number of items to allow in the queue
+        :param name: name to use for the underlying redis list. Not mangled. If empty,
+            will generate a unique identifier (UUID4).
         :param redis: redis client instance. If ``None`` (default),
             will attempt to start a redislite instance. If a redislite instance is
             created, other processes may not be able to connect to it easily.
@@ -65,7 +65,7 @@ class Queue(BaseQueue):
     def qsize(self) -> int:
         return len(self)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self._redis.llen(self.name)
 
     def put(self, obj, block=True, timeout=None) -> None:
