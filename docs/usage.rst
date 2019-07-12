@@ -59,6 +59,10 @@ There are some additional convenience methods:
     # empty the queue
     queue.clear()
 
+    # pythonic iteration: yields with .get_nowait() until the queue is empty
+    for item in queue:
+        print(item)
+
     # clears queue on leaving the context manager
     with queue:
         queue.put_many([1, 2, 3])

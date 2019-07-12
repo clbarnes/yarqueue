@@ -176,6 +176,13 @@ class Queue(BaseQueue):
         """Empty and delete the underlying Redis list"""
         self._redis.delete(self.name)
 
+    def __iter__(self) -> Iterator:
+        while True:
+            try:
+                yield self.get_nowait()
+            except Empty:
+                return
+
     def __enter__(self):
         return self
 

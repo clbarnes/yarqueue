@@ -77,6 +77,12 @@ def test_many(queue):
     assert set(queue.get_many(3)) == vals
 
 
+def test_iter(queue):
+    vals = {1, 2, 3}
+    queue.put_many(vals)
+    assert set(queue) == vals
+
+
 def test_fifo_order(fifo):
     fifo.put(1)
     fifo.put(2)
