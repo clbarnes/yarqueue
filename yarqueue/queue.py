@@ -102,7 +102,9 @@ class Queue(BaseQueue):
     def _get(self, side: Side, block=True, timeout=None) -> object:
         if block:
             timeout = timeout or 0
-            msg = getattr(self._redis, "b{}pop".format(side))(self.name, timeout=timeout)
+            msg = getattr(self._redis, "b{}pop".format(side))(
+                self.name, timeout=timeout
+            )
             if msg is not None:
                 msg = msg[1]
         else:
@@ -240,6 +242,7 @@ class LifoQueue(Queue):
 
     Contains all of the additional methods from ``yarqueue.Queue``.
     """
+
     _get_side = Side.RIGHT
 
 
@@ -248,6 +251,7 @@ class JoinableLifoQueue(JoinableQueue):
 
     Contains all of the additional methods from ``yarqueue.JoinableQueue``.
     """
+
     _get_side = Side.RIGHT
 
 
@@ -297,4 +301,5 @@ class DeQueue(Queue):
 class JoinableDeQueue(JoinableQueue, DeQueue):
     """Redis-backed double-ended queue otherwise compatible with ``multiprocessing.JoinableQueue``.
     """
+
     pass

@@ -18,7 +18,7 @@ chars = string.ascii_letters + string.digits
 
 
 def qname(class_name, test_name):
-    return ":".join((class_name, test_name, ''.join(rand.choices(chars, k=5))))
+    return ":".join((class_name, test_name, "".join(rand.choices(chars, k=5))))
 
 
 @contextmanager
