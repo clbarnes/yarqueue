@@ -1,10 +1,17 @@
+# required
+
 StrEnum>=0.4.0
 redis==3.2.1
+
+# optional
+
 redislite==5.0.124623
 pickle5; python_version >= "3.6" and python_version < "3.8"
 click==7.0
 tqdm==4.32.2
 flask==1.1.1
+
+# build
 
 pip==19.1.1
 bump2version==0.5.10
@@ -15,6 +22,8 @@ tox==3.13.2
 coverage==4.5.3
 Sphinx==2.1.2
 twine==1.13.0
+
+# test
 
 pytest==5.0.1
 pytest-runner==5.1
