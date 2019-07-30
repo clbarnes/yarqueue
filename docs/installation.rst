@@ -12,9 +12,27 @@ To install Yet Another Redis Queue, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install yarqueue
+    pip install yarqueue
 
-This is the preferred method to install Yet Another Redis Queue, as it will always install the most recent stable release.
+Yarqueue comes with a number of optional extras.
+
+.. code-block:: console
+
+    # for a self-contained python implementation of redis
+    pip install yarqueue[redislite]
+
+    # for the backported pickle protocol 5 in python 3.6 and 3.7
+    pip install yarqueue[pickle5]
+
+    # for the command line queue watching utility
+    pip install yarqueue[cli]
+
+    # for the HTTP queue watching utility
+    pip install yarqueue[http]
+
+    # for all of the above
+    pip install yarqueue[all]
+
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.

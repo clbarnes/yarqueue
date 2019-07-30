@@ -18,7 +18,9 @@ extras_require = {
     "http": ["click", "flask"],
 }
 
-extras_require["all"] = list(itertools.chain.from_iterable(extras_require.values()))
+extras_require["all"] = list(
+    set(itertools.chain.from_iterable(extras_require.values()))
+)
 
 setup_requirements = ["pytest-runner"]
 
