@@ -1,6 +1,13 @@
 yarqueue package
 ================
 
+Subpackages
+-----------
+
+.. toctree::
+
+   yarqueue.watch
+
 Submodules
 ----------
 
