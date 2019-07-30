@@ -46,10 +46,12 @@ setup(
     name="yarqueue",
     packages=find_packages(include=["yarqueue"]),
     package_data={"yarqueue": ["*.html"]},
-    entry_points={"console_scripts": [
-        "yarqwatch = yarqueue.watch.cli:yarqwatch",
-        "yarqserve = yarqueue.watch.http:yarqserve",
-    ]},
+    entry_points={
+        "console_scripts": [
+            "yarqwatch = yarqueue.watch.cli:yarqwatch",
+            "yarqserve = yarqueue.watch.http:yarqserve",
+        ]
+    },
     setup_requires=setup_requirements,
     extras_require=extras_require,
     test_suite="tests",

@@ -21,8 +21,14 @@ except ImportError:
     )
 
 from .. import __version__
-from .common import QueueWatcher, signal_handler, DEFAULT_INTERVAL, DEFAULT_RHOST, \
-    DEFAULT_RPORT, DEFAULT_DB
+from .common import (
+    QueueWatcher,
+    signal_handler,
+    DEFAULT_INTERVAL,
+    DEFAULT_RHOST,
+    DEFAULT_RPORT,
+    DEFAULT_DB,
+)
 
 
 class TqdmQueueWatcher:
@@ -94,39 +100,54 @@ def main(redis, names_totals, interval=1):
 @click.version_option(version=__version__)
 @click.help_option()
 @click.option(
-    "--name", "-n", multiple=True,
+    "--name",
+    "-n",
+    multiple=True,
     help="Name of redis lists to watch (accepts multiple)",
 )
 @click.option(
-    "--total", "-t", multiple=True, type=int,
-    help="Total items added to the queue (accepts multiple, same order as --name)"
+    "--total",
+    "-t",
+    multiple=True,
+    type=int,
+    help="Total items added to the queue (accepts multiple, same order as --name)",
 )
 @click.option(
-    "--interval", "-i", default=DEFAULT_INTERVAL, type=float,
-    help="Polling interval (seconds)", show_default=True,
-)
-@click.option(
-    "--host", default=DEFAULT_RHOST, help="Hostname for the Redis instance",
+    "--interval",
+    "-i",
+    default=DEFAULT_INTERVAL,
+    type=float,
+    help="Polling interval (seconds)",
     show_default=True,
 )
 @click.option(
-    "--port", default=DEFAULT_RPORT, type=int, help="Port for the Redis instance",
+    "--host",
+    default=DEFAULT_RHOST,
+    help="Hostname for the Redis instance",
     show_default=True,
 )
 @click.option(
-    "--db", default=DEFAULT_DB, type=int, help="DB ID for the Redis instance",
+    "--port",
+    default=DEFAULT_RPORT,
+    type=int,
+    help="Port for the Redis instance",
     show_default=True,
 )
 @click.option(
-    "--password", help="Password for the Redis instance", show_default=True,
+    "--db",
+    default=DEFAULT_DB,
+    type=int,
+    help="DB ID for the Redis instance",
+    show_default=True,
 )
+@click.option("--password", help="Password for the Redis instance", show_default=True)
 def yarqwatch(name, total, interval, host, port, db, password):
     redis = Redis(host, port, db, password)
     names_totals = dict(zip_longest(name, total))
     main(redis, names_totals, interval)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if not click:
         raise ImportError("click is not installed; yarqwatch unavailable")
     if not tqdm:

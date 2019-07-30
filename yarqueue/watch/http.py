@@ -81,46 +81,57 @@ def main(host, port, redis, names_totals):
     run_simple(host, port, app)
 
 
-@click.command(
-    help="Watch the progress of a number of redis-backed queues, over HTTP."
-)
+@click.command(help="Watch the progress of a number of redis-backed queues, over HTTP.")
 @click.version_option(version=__version__)
 @click.help_option()
 @click.option(
-    "--name", "-n", multiple=True,
+    "--name",
+    "-n",
+    multiple=True,
     help="Name of redis lists to watch (accepts multiple)",
 )
 @click.option(
-    "--total", "-t", multiple=True, type=int,
-    help="Total items added to the queue (accepts multiple, same order as --name"
+    "--total",
+    "-t",
+    multiple=True,
+    type=int,
+    help="Total items added to the queue (accepts multiple, same order as --name",
 )
 # @click.option(
 #     "--interval", "-i", default=1, type=float, help="Polling interval (seconds)",
 #     show_default=True,
 # )
 @click.option(
-    "--host", default="localhost", help="Hostname at which to run server",
-    show_default=True
-)
-@click.option(
-    "--port", default=8080, type=int, help="Port on which to run server",
-    show_default=True
-)
-@click.option(
-    "--rhost", default="localhost", help="Hostname for the Redis instance",
+    "--host",
+    default="localhost",
+    help="Hostname at which to run server",
     show_default=True,
 )
 @click.option(
-    "--rport", default=6379, type=int, help="Port for the Redis instance",
+    "--port",
+    default=8080,
+    type=int,
+    help="Port on which to run server",
     show_default=True,
 )
 @click.option(
-    "--db", default=0, type=int, help="DB ID for the Redis instance",
+    "--rhost",
+    default="localhost",
+    help="Hostname for the Redis instance",
     show_default=True,
 )
 @click.option(
-    "--password", type=int, help="Password for the Redis instance",
+    "--rport",
+    default=6379,
+    type=int,
+    help="Port for the Redis instance",
     show_default=True,
+)
+@click.option(
+    "--db", default=0, type=int, help="DB ID for the Redis instance", show_default=True
+)
+@click.option(
+    "--password", type=int, help="Password for the Redis instance", show_default=True
 )
 def yarqserve(name, total, host, port, rhost, rport, db, password):
     redis = Redis(rhost, rport, db, password)
