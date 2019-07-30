@@ -15,9 +15,10 @@ extras_require = {
     "redislite": ["redislite>=5.0"],
     "pickle": ['pickle5; python_version >= "3.6" and python_version < "3.8"'],
     "cli": ["click", "tqdm"],
+    "http": ["click", "flask"],
 }
 
-extras_require["full"] = list(itertools.chain.from_iterable(extras_require.values()))
+extras_require["all"] = list(itertools.chain.from_iterable(extras_require.values()))
 
 setup_requirements = ["pytest-runner"]
 
@@ -44,8 +45,10 @@ setup(
     keywords="yarqueue queue multiprocessing hotqueue redis redislite",
     name="yarqueue",
     packages=find_packages(include=["yarqueue"]),
+    package_data={"yarqueue": ["*.html"]},
     entry_points={"console_scripts": [
         "yarqwatch = yarqueue.watch.cli:yarqwatch",
+        "yarqserve = yarqueue.watch.http:yarqserve",
     ]},
     setup_requires=setup_requirements,
     extras_require=extras_require,

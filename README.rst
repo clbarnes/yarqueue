@@ -43,6 +43,11 @@ Features
 
 * As thread-safe as the `underlying Redis client instance <https://github.com/andymccurdy/redis-py#thread-safety>`_
 
+* Simple queue watchers
+
+  - ``yarqwatch``: command-line progress bars for given queues
+  - ``yarqserve``: simple REST API and browser page for given queues
+
 Credits
 -------
 

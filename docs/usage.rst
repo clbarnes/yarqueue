@@ -221,8 +221,49 @@ here is the implementation of the included ``json`` serializer:
 If you explicitly set the ``serializer`` argument to ``None``, values will not be serialized and deserialized.
 This might be useful if you're only working with primitives ``redis`` understands.
 
+Watchers
+--------
+
+Command line
+~~~~~~~~~~~~
+
+Requires click_ and tqdm_.
+
+::
+
+    Usage: yarqwatch [OPTIONS]
+
+      Watch the progress of a number of redis-backed queues, on the command
+      line.
+
+    Options:
+      --version             Show the version and exit.
+      --help                Show this message and exit.
+      -n, --name TEXT       Name of redis lists to watch (accepts multiple)
+      -t, --total INTEGER   Total items added to the queue (accepts multiple, same
+                            order as --name)
+      -i, --interval FLOAT  Polling interval (seconds)  [default: 1]
+      --host TEXT           Hostname for the Redis instance  [default: localhost]
+      --port INTEGER        Port for the Redis instance  [default: 6379]
+      --db INTEGER          DB ID for the Redis instance  [default: 0]
+      --password TEXT       Password for the Redis instance
+
+For example, to create a progress bar for
+the ``potato`` queue, which had 10 jobs, and
+the ``spade`` queue, which had 20 jobs,
+on the redis instance at ``myserver:1234``,
+polling every 5 seconds::
+
+    yarqwatch -n potato -t 10 -n spade -t 20 --host myserver --port 1234 --interval 5
+
+If totals are not explicitly given, the number of enqueued (and for Joinable queues, in-progress) items at calling time is used.
+
+
 .. _multiprocessing.Queue: https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue
 .. _redislite: https://github.com/yahoo/redislite
 .. _pickle: https://docs.python.org/3/library/pickle.html
 .. _pickle5: https://pypi.org/project/pickle5/
 .. _threading.LifoQueue: https://docs.python.org/3/library/queue.html#queue.LifoQueue
+.. _click: https://click.palletsprojects.com
+.. _flask: https://flask.palletsprojects.com
+.. _tqdm: https://github.com/tqdm/tqdm
