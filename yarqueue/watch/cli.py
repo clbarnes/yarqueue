@@ -114,4 +114,8 @@ def yarqwatch(name, total, interval, host, port, db, password):
 
 
 if __name__ == '__main__':
+    if not click:
+        raise ImportError("click is not installed; yarqwatch unavailable")
+    if not tqdm:
+        raise ImportError("tqdm is not installed; yarqwatch unavailable")
     yarqwatch()
