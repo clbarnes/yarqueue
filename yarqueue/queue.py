@@ -7,9 +7,9 @@ import time
 
 from redis import Redis
 
-from yarqueue.constants import DEFAULT_SERIALIZER, POLL_INTERVAL, Side
+from .constants import DEFAULT_SERIALIZER, POLL_INTERVAL, Side
 from .base_queue import BaseQueue, BaseJoinableQueue
-from yarqueue.serializer import BaseSerializer
+from .serializer import BaseSerializer
 
 
 def _ensure_redis(redis: Optional[Redis]):
