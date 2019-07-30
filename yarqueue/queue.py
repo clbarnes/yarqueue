@@ -58,7 +58,7 @@ class Queue(BaseQueue):
             library.
         """
         super().__init__(maxsize)
-        self.name = name or uuid.uuid4()
+        self.name = name or str(uuid.uuid4())
         self._redis = _ensure_redis(redis)
         self._serializer = serializer
 
