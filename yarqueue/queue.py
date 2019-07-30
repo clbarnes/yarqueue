@@ -206,7 +206,8 @@ class JoinableQueue(Queue, BaseJoinableQueue):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._counter_name = self.name + "__counter"
-        self._redis.set(self._counter_name, 0)
+        if not self._redis.exists(self._counter_name):
+            self._redis.set(self._counter_name, 0)
 
     @wraps(Queue._put)
     def _put(self, *args, **kwargs):

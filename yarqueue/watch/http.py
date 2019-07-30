@@ -35,7 +35,7 @@ class JsonQueueWatcher:
         self.total = total or len(self.watcher)
 
     def status(self):
-        queued, in_progress = self.watcher.items_tasks()
+        queued, in_progress = self.watcher.queued_inprogress()
         obj = {"queued": queued, "inProgress": in_progress}
         if self.total:
             obj["total"] = self.total
