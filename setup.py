@@ -14,6 +14,7 @@ requirements = ["redis>=3.2", "StrEnum>=0.4"]
 extras_require = {
     "redislite": ["redislite>=5.0"],
     "pickle": ['pickle5; python_version >= "3.6" and python_version < "3.8"'],
+    "cli": ["click", "tqdm"],
 }
 
 extras_require["full"] = list(itertools.chain.from_iterable(extras_require.values()))
@@ -43,6 +44,9 @@ setup(
     keywords="yarqueue queue multiprocessing hotqueue redis redislite",
     name="yarqueue",
     packages=find_packages(include=["yarqueue"]),
+    entry_points={"console_scripts": [
+        "yarqwatch = yarqueue.watch.cli:yarqwatch",
+    ]},
     setup_requires=setup_requirements,
     extras_require=extras_require,
     test_suite="tests",

@@ -2,6 +2,8 @@ StrEnum>=0.4.0
 redis==3.2.1
 redislite==5.0.124623
 pickle5; python_version >= "3.6" and python_version < "3.8"
+click==7.0
+tqdm==4.32.2
 
 pip==19.1.1
 bump2version==0.5.10
