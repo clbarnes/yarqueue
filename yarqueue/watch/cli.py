@@ -6,8 +6,21 @@ from typing import Dict, Optional
 
 from redis import Redis
 
+try:
+    from tqdm import tqdm
+except ImportError:
+    raise ImportError(
+        "tqdm not importable; CLI watcher not available. pip install tqdm"
+    )
+
+try:
+    import click
+except ImportError:
+    raise ImportError(
+        "click not importable; CLI watcher not available. pip install click"
+    )
+
 from .. import __version__
-from .ext import tqdm, click
 from .common import QueueWatcher, signal_handler, DEFAULT_INTERVAL, DEFAULT_RHOST, \
     DEFAULT_RPORT, DEFAULT_DB
 
@@ -86,7 +99,7 @@ def main(redis, names_totals, interval=1):
 )
 @click.option(
     "--total", "-t", multiple=True, type=int,
-    help="Total items added to the queue (accepts multiple, same order as --name"
+    help="Total items added to the queue (accepts multiple, same order as --name)"
 )
 @click.option(
     "--interval", "-i", default=DEFAULT_INTERVAL, type=float,

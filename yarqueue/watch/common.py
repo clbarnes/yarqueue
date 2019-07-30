@@ -6,6 +6,7 @@ from ..queue import JoinableQueue
 
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 8080
+
 DEFAULT_RHOST = "localhost"
 DEFAULT_DB = 0
 DEFAULT_RPORT = 6379
