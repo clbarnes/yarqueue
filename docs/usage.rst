@@ -258,6 +258,43 @@ polling every 5 seconds::
 
 If totals are not explicitly given, the number of enqueued (and for Joinable queues, in-progress) items at calling time is used.
 
+HTTP
+~~~~
+
+Requires click_ and flask_.
+
+::
+
+    Usage: yarqserve [OPTIONS]
+
+      Watch the progress of a number of redis-backed queues, over HTTP.
+
+    Options:
+      --version            Show the version and exit.
+      --help               Show this message and exit.
+      -n, --name TEXT      Name of redis lists to watch (accepts multiple)
+      -t, --total INTEGER  Total items added to the queue (accepts multiple, same
+                           order as --name
+      --host TEXT          Hostname at which to run server  [default: localhost]
+      --port INTEGER       Port on which to run server  [default: 8080]
+      --rhost TEXT         Hostname for the Redis instance  [default: localhost]
+      --rport INTEGER      Port for the Redis instance  [default: 6379]
+      --db INTEGER         DB ID for the Redis instance  [default: 0]
+      --password INTEGER   Password for the Redis instance
+
+For example, to serve a webpage and REST endpoint with a progress bar for
+the ``potato`` queue, which started with 10 jobs, and
+the ``spade`` queue, which started with 20 jobs,
+on the redis instance at ``myserver:1234``,
+at the host ``localhost:8888``::
+
+    yarqserve -n potato -t 10 -n spade -t 20 --host localhost --port 8888 --rhost myserver --rport 1234
+
+If totals are not explicitly given, the number of enqueued (and for Joinable queues, in-progress) items at server startup time is used.
+
+Point your browser to http://localhost:8888 to see the webpage,
+or ``curl http://localhost:8888/json`` to get the progress data in JSON form.
+The returned object's keys are the queue names, and the values are objects with ``queued``, ``inProgress``, and ``total`` counts.
 
 .. _multiprocessing.Queue: https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue
 .. _redislite: https://github.com/yahoo/redislite

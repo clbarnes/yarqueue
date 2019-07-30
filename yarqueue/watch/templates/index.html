@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>yarqueue watcher</title>
+    <style>
+      .pbar_container {stroke: black; stroke-width: 2px}
+      .segment {float: left; text-align: center}
+      .done {background-color: #00ff00}
+      .in_progress {background-color: #ffdd00}
+      .todo {background-color: #FFFFFF}
+    </style>
+    <script>
+      function updatePbar(name, statusObj) {
+        const containerElem = document.getElementById("container_" + name);
+        const done = statusObj.total - statusObj.queued - statusObj.inProgress;
+        const todo = statusObj.queued + statusObj.inProgress;
+
+        const doneElem = containerElem.getElementsByClassName("done")[0];
+        doneElem.style.width = `${(done / statusObj.total) * 100}%`;
+        doneElem.innerHTML = done.toString();
+
+        const inProgElem = containerElem.getElementsByClassName("in_progress")[0];
+        inProgElem.style.width = `${(statusObj.inProgress / statusObj.total) * 100}`;
+        inProgElem.innerHTML = statusObj.inProgress.toString();
+
+        const todoElem = containerElem.getElementsByClassName("todo")[0];
+        todoElem.style.width = `${todo / statusObj.total * 100}%`;
+        todoElem.innerHTML = todo.toString();
+      }
+
+      function updatePbars(statusObjs) {
+        for (const [name, statusObj] of Object.entries(statusObjs)) {
+          updatePbar(name, statusObj);
+        }
+      }
+
+      async function fetchAndUpdate() {
+        const timestamp = new Date();
+        console.log("Checking progress at " + timestamp.toISOString());
+        const response = await fetch("json");
+        const statusObjs = await response.json();
+        return updatePbars(statusObjs);
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Queue watcher</h1>
+    {% for name in names %}
+    <div class="pbar_container" id="container_{{ name }}">
+      <h3>{{ name }}</h3>
+      <div class="pbar" style="width: 50%">
+        <div class="segment done"></div>
+        <div class="segment in_progress"></div>
+        <div class="segment todo"></div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <script>
+      updatePbars(JSON.parse('{{ statusStr|safe }}'));
+      setInterval(fetchAndUpdate, {{ interval }});
+    </script>
+  </body>
+</html>
