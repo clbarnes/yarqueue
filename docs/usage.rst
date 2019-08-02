@@ -147,12 +147,10 @@ but has additional ``.*_left()`` (start) and ``.*_right()`` (end) variants for e
     de.put_right(3)
     assert list(de.get_many_left(3)) == [2, 1, 3]
 
-    # possible gotcha: .put_many_*() adds all of the items at once, so
-    # .put_many_left() does not reverse the order as repeated calls to .put_left() would
     de.put_left(1)
     de.put_left(2)
-    de.put_many_left(3, 4)
-    assert list(de.get_many_left(4)) == [3, 4, 2, 1]
+    de.put_many_left(3, 4)  # order as would be expected for repeated calls
+    assert list(de.get_many_left(4)) == [4, 3, 2, 1]
 
 These come in joinable varieties too: ``yarqueue.JoinableLifoQueue`` and ``yarqueue.JoinableDeQueue``.
 
