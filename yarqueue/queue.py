@@ -27,7 +27,7 @@ def _ensure_redis(redis: Optional[Redis]):
         )
 
 
-class Queue(BaseQueue):
+class FifoQueue(BaseQueue):
     """Redis-backed first-in, first-out queue compatible with multiprocessing.Queue.
 
     Additionally, contains a ``put_many()`` method for adding several items to the redis
@@ -88,6 +88,7 @@ class Queue(BaseQueue):
 
         started = datetime.utcnow()
         while len(self) >= maxsize:
+            self.log.tick("Would be overfull, sleeping: (%s of %s)", len(self), maxsize)
             time.sleep(POLL_INTERVAL)
             if timeout is not None:
                 elapsed = datetime.utcnow() - started
@@ -190,10 +191,10 @@ class Queue(BaseQueue):
         self.clear()
 
 
-FifoQueue = Queue
+Queue = FifoQueue
 
 
-class JoinableQueue(Queue, BaseJoinableQueue):
+class JoinableFifoQueue(FifoQueue, BaseJoinableQueue):
     """Redis-backed first-in, first-out queue compatible with ``multiprocessing.JoinableQueue``.
 
     Additionally, contains an ``n_tasks()`` method exposing the number of items put onto
@@ -202,20 +203,20 @@ class JoinableQueue(Queue, BaseJoinableQueue):
     called.
     """
 
-    @wraps(Queue.__init__)
+    @wraps(FifoQueue.__init__)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._counter_name = self.name + "__counter"
         if not self._redis.exists(self._counter_name):
             self._redis.set(self._counter_name, 0)
 
-    @wraps(Queue._put)
+    @wraps(FifoQueue._put)
     def _put(self, *args, **kwargs):
         # possible race condition
         super()._put(*args, **kwargs)
         self._redis.incr(self._counter_name)
 
-    @wraps(Queue._put_many)
+    @wraps(FifoQueue._put_many)
     def _put_many(self, side, objs, *args, **kwargs):
         try:
             length = len(objs)
@@ -242,10 +243,10 @@ class JoinableQueue(Queue, BaseJoinableQueue):
         return super().__exit__(type_, value, traceback)
 
 
-JoinableFifoQueue = JoinableQueue
+JoinableQueue = JoinableFifoQueue
 
 
-class LifoQueue(Queue):
+class LifoQueue(FifoQueue):
     """Redis-backed last-in, first-out queue otherwise compatible with ``multiprocessing.Queue``.
 
     Contains all of the additional methods from ``yarqueue.Queue``.
@@ -257,13 +258,13 @@ class LifoQueue(Queue):
 class JoinableLifoQueue(JoinableQueue):
     """Redis-backed last-in, first-out queue otherwise compatible with ``multiprocessing.JoinableQueue``.
 
-    Contains all of the additional methods from ``yarqueue.JoinableQueue``.
+    Contains all of the additional methods from ``yarqueue.JoinableLifoQueue``.
     """
 
     _get_side = Side.RIGHT
 
 
-class DeQueue(Queue):
+class DeQueue(FifoQueue):
     """Redis-backed double-ended queue otherwise compatible with ``multiprocessing.Queue``.
 
     Contains all of the additional methods from ``yarqueue.Queue``.
@@ -307,7 +308,6 @@ class DeQueue(Queue):
 
 
 class JoinableDeQueue(JoinableQueue, DeQueue):
-    """Redis-backed double-ended queue otherwise compatible with ``multiprocessing.JoinableQueue``.
+    """Redis-backed double-ended queue otherwise compatible with ``multiprocessing.JoinableFifoQueue``.
     """
-
     pass
