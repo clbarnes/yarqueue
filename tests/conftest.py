@@ -2,6 +2,7 @@ from contextlib import contextmanager
 import random
 import string
 
+from redislite import Redis
 import pytest
 
 from yarqueue import (
@@ -21,9 +22,18 @@ def qname(class_name, test_name):
     return ":".join((class_name, test_name, "".join(rand.choices(chars, k=5))))
 
 
+@pytest.fixture
+def redis():
+    rd = Redis()
+    keys = set(rd.keys())
+    yield rd
+    to_del = [k for k in rd.keys() if k not in keys]
+    rd.delete(*to_del)
+
+
 @contextmanager
-def setup_teardown_cls(cls, name_prefix):
-    q = cls(0, qname(cls.__name__, name_prefix))
+def setup_teardown_cls(redis, cls, name_prefix):
+    q = cls(0, qname(cls.__name__, name_prefix), redis)
     yield q
     q.clear()
 
@@ -38,30 +48,30 @@ def setup_teardown_cls(cls, name_prefix):
         JoinableDeQueue,
     ]
 )
-def queue(request):
-    with setup_teardown_cls(request.param, request.node.name) as q:
+def queue(redis, request):
+    with setup_teardown_cls(request.param, request.node.name, redis) as q:
         yield q
 
 
 @pytest.fixture(params=[JoinableFifoQueue, JoinableLifoQueue, JoinableDeQueue])
-def joinable(request):
-    with setup_teardown_cls(request.param, request.node.name) as q:
+def joinable(redis, request):
+    with setup_teardown_cls(request.param, request.node.name, redis) as q:
         yield q
 
 
 @pytest.fixture(params=[FifoQueue, JoinableFifoQueue])
-def fifo(request):
-    with setup_teardown_cls(request.param, request.node.name) as q:
+def fifo(redis, request):
+    with setup_teardown_cls(request.param, request.node.name, redis) as q:
         yield q
 
 
 @pytest.fixture(params=[LifoQueue, JoinableLifoQueue])
-def lifo(request):
-    with setup_teardown_cls(request.param, request.node.name) as q:
+def lifo(redis, request):
+    with setup_teardown_cls(request.param, request.node.name, redis) as q:
         yield q
 
 
 @pytest.fixture(params=[DeQueue, JoinableDeQueue])
-def de(request):
-    with setup_teardown_cls(request.param, request.node.name) as q:
+def de(redis, request):
+    with setup_teardown_cls(request.param, request.node.name, redis) as q:
         yield q
