@@ -1,3 +1,4 @@
+import logging
 import time
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -10,8 +11,29 @@ class QueueTimeoutError(Exception):
     pass
 
 
+def add_logging_level(name, num):
+    name = name.upper()
+    method = name.lower()
+
+    def log_for_level(self, message, *args, **kwargs):
+        if self.isEnabledFor(num):
+            self._log(num, message, *args, **kwargs)
+
+    def log_to_root(message, *args, **kwargs):
+        logging.log(num, message, *args, **kwargs)
+
+    logging.addLevelName(num, name)
+    setattr(logging, name, num)
+    setattr(logging.getLoggerClass(), method, log_for_level)
+    setattr(logging, method, log_to_root)
+
+
+add_logging_level("TICK", 5)
+
+
 class BaseQueue(ABC):
     def __init__(self, maxsize=0):
+        self.log = logging.getLogger("{}.{}".format(__name__, type(self).__name__))
         self.maxsize = maxsize
 
     @abstractmethod
@@ -85,7 +107,7 @@ class BaseJoinableQueue(BaseQueue):
 
     def n_in_progress(self) -> int:
         """How many items have been popped from the queue without ``task_done()`` being called for them"""
-        return self.n_tasks() - len(self)
+        return self.n_tasks() - self.qsize()
 
     @abstractmethod
     def task_done(self) -> None:
@@ -113,11 +135,17 @@ class BaseJoinableQueue(BaseQueue):
         """
         timeout = timeout or float("inf")
         started = datetime.utcnow()
+        n_tasks = self.n_tasks()
         while self.n_tasks() > 0:
+            self.log.tick(
+                "%s tasks remaining, sleeping for %s s", n_tasks, POLL_INTERVAL
+            )
             time.sleep(POLL_INTERVAL)
             elapsed = datetime.utcnow() - started
             if elapsed.total_seconds() > timeout:
                 raise QueueTimeoutError("Joining queue timed out")
+            n_tasks = self.n_tasks()
+        self.log.debug("Waited successfully")
 
     def join(self) -> None:
         """Block until all items in the queue have been gotten and processed.
@@ -127,5 +155,11 @@ class BaseJoinableQueue(BaseQueue):
         the item was retrieved and all work on it is complete.
         When the count of unfinished tasks drops to zero, ``join()`` unblocks.
         """
-        while self.n_tasks() > 0:
+        n_tasks = self.n_tasks()
+        while n_tasks > 0:
+            self.log.tick(
+                "%s tasks remaining, sleeping for %s s", n_tasks, POLL_INTERVAL
+            )
             time.sleep(POLL_INTERVAL)
+            n_tasks = self.n_tasks()
+        self.log.debug("Joined successfully")
