@@ -131,7 +131,9 @@ class FifoQueue(BaseQueue):
         while len(objs) > maxsize - length:
             self.log.tick(
                 "Would be overfull (%s of %s), sleeping for %s",
-                length, maxsize, POLL_INTERVAL
+                length,
+                maxsize,
+                POLL_INTERVAL,
             )
             time.sleep(POLL_INTERVAL)
             if timeout is not None:
@@ -288,4 +290,5 @@ class DeQueue(FifoQueue):
 class JoinableDeQueue(JoinableQueue, DeQueue):
     """Redis-backed double-ended queue otherwise compatible with ``multiprocessing.JoinableFifoQueue``.
     """
+
     pass
