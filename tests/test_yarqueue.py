@@ -153,3 +153,15 @@ def test_join(request):
         assert fut.result() == 1
 
     assert elapsed.total_seconds() > 2
+
+
+def test_non_int_get(queue):
+    queue.put(1)
+    queue.get(timeout=0.1)
+
+
+def test_non_int_put(queue):
+    queue.maxsize = 1
+    queue.put(1)
+    with pytest.raises(Full):
+        queue.put(2, timeout=0.1)

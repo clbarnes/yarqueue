@@ -1,4 +1,5 @@
 import uuid
+import warnings
 from functools import wraps
 from typing import Optional, Iterator, Iterable
 from queue import Empty, Full
@@ -68,17 +69,29 @@ class FifoQueue(BaseQueue):
     def __len__(self) -> int:
         return self._redis.llen(self.name)
 
+    def _int_timeout(self, timeout):
+        if timeout is None:
+            timeout = 0
+
+        if timeout % 1:
+            orig = timeout
+            timeout = 1 if timeout < 1 else round(timeout)
+            warnings.warn(
+                "Timeout of {} s given. Redis only accepts integer timeouts; "
+                "rounding to {}".format(orig, timeout)
+            )
+        return timeout
+
     def put(self, obj, block=True, timeout=None) -> None:
         self._put_many(self._put_side, [obj], block, timeout)
 
     def get(self, block=True, timeout=None) -> object:
-        return self._get(self._get_side, block, timeout)
+        return self._get(self._get_side, block, self._int_timeout(timeout))
 
     def _get(self, side: Side, block=True, timeout=None) -> object:
         if block:
-            timeout = timeout or 0
             msg = getattr(self._redis, "b{}pop".format(side))(
-                self.name, timeout=timeout
+                self.name, timeout=self._int_timeout(timeout)
             )
             if msg is not None:
                 msg = msg[1]

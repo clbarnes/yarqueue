@@ -40,6 +40,10 @@ However, the highest, rather than default, protocol is used (and it will attempt
 they also have the expected ``.*_nowait()`` variants.
 ``.qsize()``, ``.full()``, and ``.empty()`` also work as expected.
 
+Note that redis has a limitation in that its ``get`` timeouts must be integers.
+``yarqueue`` will handle this for you, but will raise a warning.
+``put`` timeouts are handled by ``yarqueue`` and so may be floats; future versions may do the same with ``get``.
+
 There are some additional convenience methods:
 
 .. code-block:: python
