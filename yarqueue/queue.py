@@ -69,33 +69,7 @@ class FifoQueue(BaseQueue):
         return self._redis.llen(self.name)
 
     def put(self, obj, block=True, timeout=None) -> None:
-        self._put(self._put_side, obj, block, timeout)
-
-    def _put(self, side: Side, obj, block=True, timeout=None) -> None:
-        if self._serializer:
-            obj = self._serializer.dumps(obj)
-
-        maxsize = self.maxsize or float("inf")
-
-        push_method = getattr(self._redis, side + "push")
-
-        if not block:
-            if self.full():
-                raise Full()
-            else:
-                push_method(self.name, obj)
-                return
-
-        started = datetime.utcnow()
-        while len(self) >= maxsize:
-            self.log.tick("Would be overfull, sleeping: (%s of %s)", len(self), maxsize)
-            time.sleep(POLL_INTERVAL)
-            if timeout is not None:
-                elapsed = datetime.utcnow() - started
-                if elapsed.total_seconds() >= timeout:
-                    raise Full()
-
-        push_method(self.name, obj)
+        self._put_many(self._put_side, [obj], block, timeout)
 
     def get(self, block=True, timeout=None) -> object:
         return self._get(self._get_side, block, timeout)
@@ -117,6 +91,8 @@ class FifoQueue(BaseQueue):
         if self._serializer:
             msg = self._serializer.loads(msg)
 
+        self.log.debug("Got item from %s", side)
+
         return msg
 
     def get_many(self, n_items: int, block=True, timeout=None) -> Iterator:
@@ -135,8 +111,9 @@ class FifoQueue(BaseQueue):
             count += 1
 
     def _put_many(self, side: Side, objs: Iterable, block, timeout):
-        if self._serializer:
-            objs = [self._serializer.dumps(obj) for obj in objs]
+        objs = [self._serializer.dumps(obj) for obj in objs]
+        if side == Side.LEFT:
+            objs = objs[::-1]
 
         maxsize = self.maxsize or float("inf")
 
@@ -150,14 +127,21 @@ class FifoQueue(BaseQueue):
                 return
 
         started = datetime.utcnow()
-        while len(objs) > maxsize - len(self):
+        length = len(self)
+        while len(objs) > maxsize - length:
+            self.log.tick(
+                "Would be overfull (%s of %s), sleeping for %s",
+                length, maxsize, POLL_INTERVAL
+            )
             time.sleep(POLL_INTERVAL)
             if timeout is not None:
                 elapsed = datetime.utcnow() - started
                 if elapsed.total_seconds() >= timeout:
                     raise Full()
+            length = len(self)
 
         push_method(self.name, *objs)
+        self.log.debug("Put %s element(s) on %s of queue", len(objs), side)
 
     def put_many(self, objs: Iterable, block=True, timeout=None):
         """Put multiple items on the queue at once.
@@ -209,12 +193,6 @@ class JoinableFifoQueue(FifoQueue, BaseJoinableQueue):
         self._counter_name = self.name + "__counter"
         if not self._redis.exists(self._counter_name):
             self._redis.set(self._counter_name, 0)
-
-    @wraps(FifoQueue._put)
-    def _put(self, *args, **kwargs):
-        # possible race condition
-        super()._put(*args, **kwargs)
-        self._redis.incr(self._counter_name)
 
     @wraps(FifoQueue._put_many)
     def _put_many(self, side, objs, *args, **kwargs):
@@ -276,7 +254,7 @@ class DeQueue(FifoQueue):
 
     def put_left(self, obj, block=True, timeout=None) -> None:
         """Put on the left (start) of the list."""
-        self._put(Side.LEFT, obj, block, timeout)
+        self._put_many(Side.LEFT, [obj], block, timeout)
 
     def put_many_left(self, objs: Iterable, block=True, timeout=None):
         """Put many elements on the left (start) of the list"""
@@ -284,7 +262,7 @@ class DeQueue(FifoQueue):
 
     def put_right(self, obj, block=True, timeout=None) -> None:
         """Put on the right (end) of the list."""
-        self._put(Side.RIGHT, obj, block, timeout)
+        self._put_many(Side.RIGHT, [obj], block, timeout)
 
     def put_many_right(self, objs: Iterable, block=True, timeout=None):
         """Put many elements on the right (end) of the list """
