@@ -28,7 +28,8 @@ def redis():
     keys = set(rd.keys())
     yield rd
     to_del = [k for k in rd.keys() if k not in keys]
-    rd.delete(*to_del)
+    if to_del:
+        rd.delete(*to_del)
 
 
 @contextmanager
@@ -49,29 +50,29 @@ def setup_teardown_cls(redis, cls, name_prefix):
     ]
 )
 def queue(redis, request):
-    with setup_teardown_cls(request.param, request.node.name, redis) as q:
+    with setup_teardown_cls(redis, request.param, request.node.name) as q:
         yield q
 
 
 @pytest.fixture(params=[JoinableFifoQueue, JoinableLifoQueue, JoinableDeQueue])
 def joinable(redis, request):
-    with setup_teardown_cls(request.param, request.node.name, redis) as q:
+    with setup_teardown_cls(redis, request.param, request.node.name) as q:
         yield q
 
 
 @pytest.fixture(params=[FifoQueue, JoinableFifoQueue])
 def fifo(redis, request):
-    with setup_teardown_cls(request.param, request.node.name, redis) as q:
+    with setup_teardown_cls(redis, request.param, request.node.name) as q:
         yield q
 
 
 @pytest.fixture(params=[LifoQueue, JoinableLifoQueue])
 def lifo(redis, request):
-    with setup_teardown_cls(request.param, request.node.name, redis) as q:
+    with setup_teardown_cls(redis, request.param, request.node.name) as q:
         yield q
 
 
 @pytest.fixture(params=[DeQueue, JoinableDeQueue])
 def de(redis, request):
-    with setup_teardown_cls(request.param, request.node.name, redis) as q:
+    with setup_teardown_cls(redis, request.param, request.node.name) as q:
         yield q
