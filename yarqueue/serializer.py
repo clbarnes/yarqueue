@@ -17,6 +17,14 @@ class BaseSerializer(ABC):
         pass
 
 
+class Null(BaseSerializer):
+    def dumps(self, obj):
+        return obj
+
+    def loads(self, obj):
+        return obj
+
+
 class Pickle(BaseSerializer):
     def __init__(self, protocol=None, dumps_kwargs=None, loads_kwargs=None):
         self.dumps_kwargs = deepcopy(dumps_kwargs) or dict()
