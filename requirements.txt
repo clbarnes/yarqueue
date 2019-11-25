@@ -8,7 +8,7 @@ redis==3.3.8
 redislite==5.0.142319
 pickle5; python_version >= "3.6" and python_version < "3.8"
 click==7.0
-tqdm==4.36.1
+tqdm==4.39.0
 flask==1.1.1
 
 # build
