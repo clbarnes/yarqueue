@@ -26,5 +26,5 @@ twine==2.0.0
 # test
 
 pytest==5.3.5
-pytest-runner==5.1
+pytest-runner==5.2
 req==1.0.0
