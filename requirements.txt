@@ -5,7 +5,7 @@ redis==3.4.0
 
 # optional
 
-redislite==5.0.142319
+redislite==5.0.165407
 pickle5; python_version >= "3.6" and python_version < "3.8"
 click==7.0
 tqdm==4.42.0
